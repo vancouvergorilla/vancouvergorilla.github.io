@@ -1,0 +1,47 @@
+#contact-nav {
+    background-color: #064273;
+}
+
+.contact-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 30%;
+    color: #555555;
+}
+
+.contact-container input[type=text], input[type=email], input[type=tel], select, textarea {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 1em;
+    box-sizing: border-box;
+ }
+
+.contact-container input[type=submit] {
+    width: 100%;
+    background-color: #41A4F5;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.required {
+    color: red;
+}
+
+#prefer-contact-text {
+    margin: 0 0 8px 0;
+}
+
+#prefer-phone {
+    margin-bottom: 8px;
+}

@@ -1,0 +1,53 @@
+#about-nav {
+    background-color: #064273;
+}
+
+.about-me-container {
+    display: flex;
+}
+
+.contact-info {
+    width: 40%;
+    box-sizing: border-box;
+    padding-left: 20%;
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+#professional-img {
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+.bio {
+    width: 60%;
+    padding: 50px 10%;
+    box-sizing: border-box;
+    line-height: 1.8;
+}
+
+.icon-info {
+    display: flex;
+    align-items: center;
+}
+
+.material-icons {
+    padding: 4px 5px 4px 0;
+}
+
+@media screen and (max-width: 1000px) {
+    .about-me-container {
+        flex-direction: column;
+    }
+
+    .contact-info {
+        width: 100%;
+        padding: 50px 10%;
+    }
+
+    .bio {
+        width: 100%;
+        padding: 0 10%;
+    }
+}

@@ -1,0 +1,28 @@
+#projects-nav {
+    background-color: #064273;
+}
+
+.project-detail-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20%;
+    margin-top: 30px;
+    color: #555555;
+}
+
+.project-detail-container p{
+    line-height: 2em;
+}
+
+.project-detail-container h3{
+    margin: 5px 0;
+}
+
+#er-diagram {
+    width: 800px;
+    margin: auto;
+}
+
+.screenshot {
+    width: 400px;
+}

@@ -1,0 +1,109 @@
+#projects-nav {
+    background-color: #064273;
+}
+
+.projects-showcase {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 50px;
+}
+
+.project-card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 45%;
+    height: auto;
+    display: flex;
+}
+
+.project-img {
+    height: 35vw;
+}
+
+#android-apple-img {
+    width: 10vw;
+    margin-top: 2vw;
+}
+
+#oculus-img {
+    width: 7vw;
+    margin-top: 1vw;
+}
+
+.project-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #F6F6F6;
+    box-sizing: border-box;
+    padding: 2vw;
+    color: #555555;
+    height: 35vw;
+    width: 60%;
+}
+
+.project-description h1{
+    text-align: center;
+    font-size: 2.5vw;
+}
+
+.project-description p{
+    text-justify: distribute;
+    padding: 0 1vw;
+    font-size: 1vw;
+}
+
+.learn-more-button {
+    background-color: #41A4F5;
+    border-radius: 25px;
+    border: none;
+    color: white;
+    padding: 1vw 2vw;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1vw;
+    cursor: pointer;
+}
+
+.learn-more-link {
+    margin-top: 2vw;
+}
+
+.learn-more-button:hover {
+    background-color: #0a5ea3;
+}
+
+.learn-more-button:active {
+    background-color: #064273;
+}
+
+@media screen and (max-width: 600px) {
+    .projects-showcase {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .project-card {
+        width: 80%;
+        height: 60vw;
+        margin-bottom: 40px;
+    }
+    .project-img {
+        height: 60vw;
+    }
+    .project-description {
+        width: 80%;
+        height: 60vw;
+    }
+    .project-description h1{
+        font-size: 5vw;
+    }
+    .project-description p{
+        font-size: 2vw;
+    }
+    .learn-more-button {
+        font-size: 2vw;
+    }
+}

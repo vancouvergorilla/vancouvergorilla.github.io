@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="nav.css"/>
+    <link rel="stylesheet" href="project_detail.css"/>
+    <title>Pet Mania Details</title>
+</head>
+<body>
+    <nav class="navigation-bar">
+        <ul role="menubar">
+            <li role="menuitem" id="projects-nav">
+                <a href="projects.html"> Projects </a>
+            </li>
+            <li role="menuitem" id="about-nav">
+                <a href="about_me.html"> About </a>
+            </li>
+            <li role="menuitem" id="resume-nav">
+                <a href="assets/resume.pdf"> Resume </a>
+            </li>
+            <li role="menuitem" id="schedule-nav">
+                <a href="schedule.html"> Schedule </a>
+            </li>
+            <li role="menuitem" id="contact-nav">
+                <a href="contact_me.html"> Contact </a>
+            </li>
+        </ul>
+    </nav>
+    <main>
+        <div class="header-bar">
+            Pet Mania
+        </div>
+        <div class="project-detail-container">
+            <h2>Project Motivation</h2>
+            <p>Pet Mania is essentially a photo sharing application which targets people who
+                own pets, who is going to have pets, and basically people who like animals.
+                Not only can users have a platform to share pictures of their own pets, but
+                also they can view photos from other users. They can also search the photos,
+                users and other information among the whole Pet Mania. For pet lovers, it can
+                become a social method of vital importance. Ideally, Pet Mania is committed
+                to the construction of an open pet information exchange community.</p>
+            <h2>ER Diagram and Schema</h2>
+            <p>
+                User( username , password, DOB, gender, createDate, name, region, petBreed, petKind,
+                petGender, petName)<br>
+                Post(date, image, text, likes, POID , postBy)<br>
+                following( follower , followee )<br>
+            </p>
+            <img id="er-diagram" src="assets/er_diagram.png" alt="ER diagram that display the User, Post, following relationship above"/>
+            <h2> Functionality </h2>
+            <p>
+                We aim to build a social media application based on photo sharing of pets.
+                Ideally, it will provide information exchanging between users and finally
+                build a open community where users can also socialize with their pets.
+            </p>
+            <h3>User account register and login</h3>
+            <p>
+                Sign up account by completing basic information about both users and their
+                pets. Login with the account you registered.
+            </p>
+            <h3>View post, post picture with text description and delete post</h3>
+            <p>Users can post picture of their pets and add text description to the image.</p>
+            <h3>Like and unlike post </h3>
+            <p>Users can like and unlike posts, the number of likes will be recorded in every
+                post.</p>
+            <h3>Follow and unfollow other others</h3>
+            <p>User can follow and unfollow other users. All the posts of users you followed
+                will be showed at the homepage.</p>
+            <h3>Search</h3>
+            <p>In search page, users can get post they want by searching username or the
+                text description attached to that post</p>
+            <h3>Pet picture recommendation</h3>
+            <p>In search page, we will recommend you the most popular posts among the
+                community and also personalized posts according to what post you liked.</p>
+            <h2> Screenshots </h2>
+            <img class="screenshot" src="assets/post.png" alt="PetMania post a new photo screenshot"/>
+            <img class="screenshot" src="assets/profile.png" alt="PetMania profile screenshot"/>
+            <h2> Demo </h2>
+            <iframe width="1000" height="600" src="https://www.youtube.com/embed/vlpX-ws00Mo"></iframe>
+        </div>
+    </main>
+</body>
+</html>
