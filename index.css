@@ -1,13 +1,22 @@
+/**
+ * Navigation highlight
+ */
 #projects-nav {
     background-color: #064273;
 }
 
-.projects-showcase {
+/**
+ * Project showcase page container
+ */
+.projects-showcase-container {
     display: flex;
     justify-content: space-evenly;
     margin-top: 50px;
 }
 
+/**
+ * Single project card
+ */
 .project-card {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
@@ -79,6 +88,9 @@
     background-color: #064273;
 }
 
+/**
+ * Responsive screen for smaller screen
+ */
 @media screen and (max-width: 600px) {
     .projects-showcase {
         flex-direction: column;

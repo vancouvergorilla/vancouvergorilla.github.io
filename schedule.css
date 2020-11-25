@@ -1,7 +1,13 @@
+/**
+ * Navigation highlight
+ */
 #schedule-nav {
     background-color: #064273;
 }
 
+/**
+ * Personal schedule container
+ */
 .schedule-container {
     display: flex;
     flex-direction: column;
@@ -9,6 +15,9 @@
     padding: 0 10%;
 }
 
+/**
+ * Google calendar
+ */
 #google-calendar {
     border: 0;
     margin-top: 50px;

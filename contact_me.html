@@ -7,32 +7,35 @@
     <title>Contact</title>
 </head>
 <body>
+    <!-- navigation menu -->
     <nav class="navigation-bar">
         <ul role="menubar">
-            <li role="menuitem" id="projects-nav">
-                <a href="index.html"> Projects </a>
+            <li role="menuitem" >
+                <a href="index.html"> <div id="projects-nav"> Projects </div></a>
             </li>
-            <li role="menuitem" id="about-nav">
-                <a href="about_me.html"> About </a>
+            <li role="menuitem" >
+                <a href="about_me.html"> <div id="about-nav"> About </div> </a>
             </li>
-            <li role="menuitem" id="resume-nav">
-                <a href="assets/resume.pdf"> Resume </a>
+            <li role="menuitem" >
+                <a href="assets/resume.pdf"> <div id="resume-nav"> Resume </div> </a>
             </li>
-            <li role="menuitem" id="schedule-nav">
-                <a href="schedule.html"> Schedule </a>
+            <li role="menuitem" >
+                <a href="schedule.html"> <div id="schedule-nav"> Schedule </div> </a>
             </li>
-            <li role="menuitem" id="contact-nav">
-                <a href="contact_me.html"> Contact </a>
+            <li role="menuitem">
+                <a href="contact_me.html"> <div id="contact-nav"> Contact </div> </a>
             </li>
         </ul>
     </nav>
     <main>
+        <!-- page header -->
         <div class="header-bar">
             Contact Me
         </div>
         <div class="contact-container">
             <h1>Get In Touch</h1>
             <p>If you have any questions or want to keep connected with me, don't hesitate to enter your information!</p>
+            <!-- contact form -->
             <form name="ContactMeForm" onsubmit="return validateForm()" method="post">
                 <label for="firstname">First Name</label> <span class="required">*</span>
                 <input type="text" id="firstname" name="firstname" placeholder="Your first name...">

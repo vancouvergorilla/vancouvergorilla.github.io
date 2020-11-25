@@ -1,7 +1,18 @@
+/**
+ * Navigation highlight
+ */
 #projects-nav {
     background-color: #064273;
 }
 
+#back-icon {
+    font-size: 50px;
+    margin-top: 10px;
+}
+
+/**
+ * Project detail container
+ */
 .project-detail-container {
     display: flex;
     flex-direction: column;
@@ -10,6 +21,9 @@
     color: #555555;
 }
 
+/**
+ * Project detail
+ */
 .project-detail-container p{
     line-height: 2em;
 }

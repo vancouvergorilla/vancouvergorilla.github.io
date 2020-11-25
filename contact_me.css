@@ -1,7 +1,13 @@
+/**
+ * Navigation highlight
+ */
 #contact-nav {
     background-color: #064273;
 }
 
+/**
+ * Contact page container
+ */
 .contact-container {
     display: flex;
     flex-direction: column;
@@ -9,6 +15,9 @@
     color: #555555;
 }
 
+/**
+ * Form styling
+ */
 .contact-container input[type=text], input[type=email], input[type=tel], select, textarea {
     width: 100%;
     padding: 12px 20px;

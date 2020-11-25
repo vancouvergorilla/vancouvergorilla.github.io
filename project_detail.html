@@ -4,32 +4,38 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="nav.css"/>
     <link rel="stylesheet" href="project_detail.css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
     <title>Pet Mania Details</title>
 </head>
 <body>
+    <!-- navigation menu -->
     <nav class="navigation-bar">
         <ul role="menubar">
-            <li role="menuitem" id="projects-nav">
-                <a href="index.html"> Projects </a>
+            <li role="menuitem" >
+                <a href="index.html"> <div id="projects-nav"> Projects </div></a>
             </li>
-            <li role="menuitem" id="about-nav">
-                <a href="about_me.html"> About </a>
+            <li role="menuitem" >
+                <a href="about_me.html"> <div id="about-nav"> About </div> </a>
             </li>
-            <li role="menuitem" id="resume-nav">
-                <a href="assets/resume.pdf"> Resume </a>
+            <li role="menuitem" >
+                <a href="assets/resume.pdf"> <div id="resume-nav"> Resume </div> </a>
             </li>
-            <li role="menuitem" id="schedule-nav">
-                <a href="schedule.html"> Schedule </a>
+            <li role="menuitem" >
+                <a href="schedule.html"> <div id="schedule-nav"> Schedule </div> </a>
             </li>
-            <li role="menuitem" id="contact-nav">
-                <a href="contact_me.html"> Contact </a>
+            <li role="menuitem">
+                <a href="contact_me.html"> <div id="contact-nav"> Contact </div> </a>
             </li>
         </ul>
     </nav>
     <main>
+        <!-- page header -->
         <div class="header-bar">
+            <a href="index.html"><i class="material-icons" id="back-icon">keyboard_arrow_left</i></a>
             Pet Mania
         </div>
+        <!-- project detail -->
         <div class="project-detail-container">
             <h2>Project Motivation</h2>
             <p>Pet Mania is essentially a photo sharing application which targets people who
