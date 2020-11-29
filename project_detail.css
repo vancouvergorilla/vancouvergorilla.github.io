@@ -40,3 +40,16 @@
 .screenshot {
     width: 400px;
 }
+
+/**
+ * Responsive screen for smaller screen
+ */
+@media screen and (max-width: 1000px) {
+    iframe {
+        width: 500px;
+        height: 300px;
+    }
+    #er-diagram {
+        width: 400px;
+    }
+}
