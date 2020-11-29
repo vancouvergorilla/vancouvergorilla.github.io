@@ -92,7 +92,7 @@
  * Responsive screen for smaller screen
  */
 @media screen and (max-width: 600px) {
-    .projects-showcase {
+    .projects-showcase-container {
         flex-direction: column;
         justify-content: center;
         align-items: center;
