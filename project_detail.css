@@ -41,6 +41,11 @@
     width: 400px;
 }
 
+iframe {
+    width: 1000px;
+    height: 600px;
+}
+
 /**
  * Responsive screen for smaller screen
  */

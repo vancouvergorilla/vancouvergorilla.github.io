@@ -21,4 +21,6 @@
 #google-calendar {
     border: 0;
     margin-top: 50px;
+    width: 800px;
+    height: 600px;
 }
