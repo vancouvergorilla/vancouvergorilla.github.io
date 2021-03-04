@@ -1,0 +1,378 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<title>COVID-19</title>
+<head>
+  <style>
+      .x-axis { font: 14px sans-serif; }
+      .y-axis { font: 14px sans-serif; }
+      .line {
+          fill: none;
+          stroke: steelblue;
+          stroke-width: 2px;
+      }
+      div.tooltip {
+          position: absolute;
+          padding: 10px;
+          font: 16px sans-serif;
+          background: lightsteelblue;
+          border: 0;
+          border-radius: 3px;
+          pointer-events: none;
+      }
+      .main-display {
+          display: flex;
+          justify-content: center;
+      }
+      .interactive-box {
+          margin-top: 100px;
+      }
+  </style>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://unpkg.com/d3-simple-slider"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js" charset="utf-8"></script>
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous"
+  />
+</head>
+<body>
+<div class="main-display">
+  <div class="svg-container">
+    <svg width="1200" height="500"></svg>
+    <div class="row align-items-center">
+      <div class="col-sm-2"><p id="value-range"></p></div>
+      <div class="col-sm"><div id="slider-range"></div></div>
+    </div>
+  </div>
+  <div class="interactive-box">
+    <h4> Data Type </h4>
+    <form name="dataTypeForm">
+      <input type="radio" name="data-type" value="daily"> Show Daily<br>
+      <input type="radio" name="data-type" checked value="cumulative"> Show Cumulative<br>
+    </form>
+    <br>
+    <h4> Statistics </h4>
+    <form name="statisticsForm">
+      <input type="radio" name="statistics" checked value="confirmed"> Confirmed<br>
+      <input type="radio" name="statistics" value="deaths"> Deaths<br>
+    </form>
+    <br>
+    <h4> Select State </h4>
+    <select id="selectState"></select>
+  </div>
+</div>
+<script>
+
+  window.onload = function(){
+    dataTypeForm.reset();
+    statisticsForm.reset();
+  }
+
+  var svg = d3.select("svg"),
+    margin = 200,
+    width = svg.attr("width") - margin,
+    height = svg.attr("height") - margin
+
+  var x, y
+  var xAxis, yAxis
+  var minLimit, maxLimit
+  var currDataType = "cumulative"
+  var currDateVal = null
+  var currState = "All"
+  var currStatistics = "confirmed"
+
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+  svg.append("text")
+    .attr("class", "chart-title")
+    .attr("transform", "translate(300,0)")
+    .attr("x", 50)
+    .attr("y", 50)
+    .attr("font-size", "24px")
+    .text("Cumulative Confirmed Cases by Date in United States")
+
+  // selection
+  var USStates = ['All', 'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia',
+    'Florida','Georgia','Guam','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland',
+    'Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey',
+    'New Mexico','New York','North Carolina','North Dakota','Northern Mariana Islands','Ohio','Oklahoma','Oregon','Pennsylvania',
+    'Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virgin Island','Virginia','Washington',
+    'West Virginia','Wisconsin','Wyoming']
+
+  d3.select("#selectState")
+    .selectAll('myOptions')
+    .data(USStates)
+    .enter()
+    .append('option')
+    .text(function (d) { return d; })
+    .attr("value", function (d) { return d; })
+
+  var g = svg.append("g")
+    .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+  var parseDate = d3.timeFormat('%Y-%m-%d');
+
+  d3.csv("us_covid_19_data.csv").then(function(data) {
+    var dataByDate = {}
+    minLimit = new Date(8640000000000000);
+    maxLimit = new Date(-8640000000000000);
+    data.forEach(function(d) {
+      var rowDate = new Date(d.ObservationDate)
+      if (rowDate < minLimit) {
+        minLimit = rowDate
+      }
+      if (rowDate > maxLimit) {
+        maxLimit = rowDate
+      }
+      if (!dataByDate.hasOwnProperty(rowDate)) {
+        dataByDate[rowDate] = {}
+        dataByDate[rowDate]["confirmed"] = {}
+        dataByDate[rowDate]["deaths"] = {}
+        USStates.forEach(s => {
+          dataByDate[rowDate]["confirmed"][s] = 0
+          dataByDate[rowDate]["deaths"][s] = 0
+        })
+      }
+
+      dataByDate[rowDate]["confirmed"]["All"] += +d.Confirmed
+      dataByDate[rowDate]["confirmed"][d["Province/State"]] += +d.Confirmed
+      dataByDate[rowDate]["deaths"]["All"] += +d.Deaths
+      dataByDate[rowDate]["deaths"][d["Province/State"]] += +d.Deaths
+    });
+    var formattedData = Object.keys(dataByDate).map((key) => (
+      {
+        "date": new Date(key),
+        "confirmed": dataByDate[key]["confirmed"],
+        "deaths": dataByDate[key]["deaths"]
+      }
+    ));
+
+    // Axis
+    x = d3.scaleTime()
+      .range([width/formattedData.length/2, width-width/formattedData.length/2])
+      .domain(d3.extent(formattedData, function(d) { return d.date; }))
+    y = d3.scaleLinear()
+      .range([height, 0])
+      .domain([0, d3.max(formattedData, function(d) { return d[currStatistics][currState]; })])
+
+    xAxis = d3.axisBottom()
+      .scale(x)
+      .tickFormat(d3.timeFormat("%Y-%m-%d"))
+
+    yAxis = d3.axisLeft().scale(y)
+
+    g.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)")
+
+    g.append("g")
+      .attr("class", "y-axis")
+      .call(yAxis);
+
+    // Add bar
+    g.selectAll("rect")
+      .data(formattedData, function(d) { return d.date })
+      .enter().append("rect")
+      .attr("fill", "steelblue")
+      .attr("x", function(d) { return x(d.date) - (width/formattedData.length*3/4)/2; })
+      .attr("width", width/formattedData.length*3/4)
+      .attr("y", function(d) { return y(d[currStatistics][currState]); })
+      .attr("height", function(d) { return height - y(d[currStatistics][currState]); })
+      .on("mouseover", function(d) {
+        d3.select(this).style("fill", "#ffa500");
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        div.html("Date: " + parseDate(d.date) + "<br/>"  + statisticsTranslation() + " Cases: " + d[currStatistics][currState])
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+        d3.select(this).style("fill", "steelblue");
+        div.transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
+
+    // Range
+    var sliderRange = d3
+      .sliderBottom()
+      .min(minLimit)
+      .max(maxLimit)
+      .width(700)
+      .tickFormat(parseDate)
+      .ticks(5)
+      .default([minLimit, maxLimit])
+      .fill('#2196f3')
+      .on('onchange', _.throttle(val => {
+        currDateVal = val
+        updateData(formattedData, currDataType)
+      }, 100));
+
+    var gRange = d3
+      .select('div#slider-range')
+      .append('svg')
+      .attr('width', 800)
+      .attr('height', 100)
+      .append('g')
+      .attr('transform', 'translate(30,30)');
+
+    gRange.call(sliderRange);
+
+    // data type button
+    d3.selectAll("input[name='data-type']").on("change", function(){
+      updateData(formattedData, this.value)
+    });
+
+    // data type button
+    d3.selectAll("input[name='statistics']").on("change", function(){
+      currStatistics = this.value
+      updateData(formattedData, currDataType)
+    });
+
+    // dropdown
+    d3.select("#selectState").on("change", function(d) {
+      currState = d3.select(this).property("value")
+      updateData(formattedData, currDataType)
+    })
+  });
+
+  function updateData(formattedData, dataType) {
+    // switch between daily and cumulative
+    if (dataType === "daily" && currDataType === "cumulative") {
+      formattedData.sort((a, b) => {
+        return a < b ? 1 : -1
+      })
+      for (let i = formattedData.length - 1; i >= 1; i--) {
+        for (let j = 0; j < USStates.length; j++) {
+          formattedData[i]["confirmed"][USStates[j]] = formattedData[i]["confirmed"][USStates[j]] - formattedData[i - 1]["confirmed"][USStates[j]]
+          formattedData[i]["deaths"][USStates[j]] = formattedData[i]["deaths"][USStates[j]] - formattedData[i - 1]["deaths"][USStates[j]]
+        }
+      }
+      currDataType = "daily"
+    } else if (dataType === "cumulative" && currDataType === "daily") {
+      formattedData.sort((a, b) => {
+        return a < b ? 1 : -1
+      })
+      for (let i = 1; i < formattedData.length; i++) {
+        for (let j = 0; j < USStates.length; j++) {
+          formattedData[i]["confirmed"][USStates[j]] = formattedData[i]["confirmed"][USStates[j]] + formattedData[i - 1]["confirmed"][USStates[j]]
+          formattedData[i]["deaths"][USStates[j]] = formattedData[i]["deaths"][USStates[j]] + formattedData[i - 1]["deaths"][USStates[j]]
+        }
+      }
+      currDataType = "cumulative"
+    }
+    d3.select(".chart-title").text(dataTypeTranslation() + " " + statisticsTranslation() + " Cases by Date in " + stateTranslation())
+
+    console.log(formattedData)
+
+    // filter date
+    var filteredData = []
+    if (currDateVal !== null) {
+      minLimit = new Date(currDateVal[0])
+      maxLimit = new Date(currDateVal[1])
+    }
+    formattedData.forEach(function (d) {
+      if (d.date > minLimit && d.date < maxLimit && d[currStatistics][currState] >= 0) {
+        filteredData.push(d)
+      }
+    })
+
+    updateGraph(minLimit, maxLimit, filteredData)
+  }
+
+  function updateGraph(minLimit, maxLimit, filteredData) {
+    // update axis
+    x = d3.scaleTime()
+      .range([width/filteredData.length/2, width-width/filteredData.length/2])
+      .domain([minLimit,maxLimit])
+    g.select(".x-axis")
+      .transition()
+      .duration(500)
+      .call(d3.axisBottom().scale(x).tickFormat(d3.timeFormat("%Y-%m-%d")))
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)")
+    y = d3.scaleLinear()
+      .range([height, 0])
+      .domain([d3.min(filteredData, function(d) { return d[currStatistics][currState]; }), d3.max(filteredData, function(d) { return d[currStatistics][currState]; })])
+    g.select(".y-axis")
+      .transition()
+      .duration(500)
+      .call(d3.axisLeft().scale(y));
+
+    // Remove bars
+    g.selectAll("rect")
+      .data(filteredData, function(d) { return d.date })
+      .exit()
+      .remove()
+
+    // Add bar
+    g.selectAll("rect")
+      .data(filteredData, function(d) { return d.date })
+      .enter().append("rect")
+      .attr("fill", "steelblue")
+      .attr("x", function(d) { return x(d.date) - (width/filteredData.length*3/4)/2; })
+      .attr("width", width/filteredData.length*3/4)
+      .attr("y", function(d) { return y(d[currStatistics][currState]); })
+      .attr("height", function(d) { return height - y(d[currStatistics][currState]); })
+      .on("mouseover", function(d) {
+        d3.select(this).style("fill", "#ffa500");
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        div	.html("Date: " + d.date + "<br/>"  + stateTranslation() + " Cases: " + d[currStatistics][currState])
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+        d3.select(this).style("fill", "steelblue");
+        div.transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
+
+    // Transition
+    g.selectAll("rect")
+      .data(filteredData, function(d) { return d.date })
+      .transition()
+      .duration(500)
+      .attr("x", function (d) { return x(d.date) - (width/filteredData.length*3/4)/2; } )
+      .attr("width", width/filteredData.length*3/4)
+      .attr("y", function (d) { return y(d[currStatistics][currState]); } )
+      .attr("height", function(d) { return height - y(d[currStatistics][currState]); })
+  }
+
+  function dataTypeTranslation() {
+    if (currDataType === "cumulative") return "Cumulative"
+    if (currDataType === "daily") return "Daily"
+  }
+
+  function statisticsTranslation() {
+    if (currStatistics === "confirmed") return "Confirmed"
+    if (currStatistics === "deaths") return "Death"
+  }
+
+  function stateTranslation() {
+    if (currState === "All") {
+      return "United States"
+    } else {
+      return currState
+    }
+  }
+</script>
+</body>
+</html>
