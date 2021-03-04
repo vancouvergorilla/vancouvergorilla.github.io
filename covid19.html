@@ -189,17 +189,34 @@
       .attr("width", width/formattedData.length*3/4)
       .attr("y", function(d) { return y(d[currStatistics][currState]); })
       .attr("height", function(d) { return height - y(d[currStatistics][currState]); })
-      .on("mouseover", function(d) {
-        d3.select(this).style("fill", "#ffa500");
+      .attr("id", function(d) { return "rect_" + parseDate(d.date) })
+
+    let hoverData = JSON.parse(JSON.stringify(formattedData))
+    hoverData.map(function (d) {
+      d.date = new Date(d.date)
+      return d
+    })
+
+    // add hover bar
+    g.selectAll("rect")
+      .data(hoverData, function(d) { return d })
+      .enter().append("rect")
+      .attr("opacity", 0)
+      .attr("x", function(d) { return x(d.date) - (width/formattedData.length*3/4)/2; })
+      .attr("width", width/formattedData.length*3/4)
+      .attr("y", function(d) { return y(d3.max(formattedData, function(d) { return d[currStatistics][currState]; })); })
+      .attr("height", function(d) { return height - y(d3.max(formattedData, function(d) { return d[currStatistics][currState]; })); })
+      .on("mouseover", function(event, d) {
+        d3.select("#rect_" + parseDate(d.date)).style("fill", "#ffa500");
         div.transition()
           .duration(200)
           .style("opacity", .9);
         div.html("Date: " + parseDate(d.date) + "<br/>"  + statisticsTranslation() + " Cases: " + d[currStatistics][currState])
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
+          .style("left", (event.pageX + 30) + "px")
+          .style("top", (event.pageY - 30) + "px");
       })
-      .on("mouseout", function(d) {
-        d3.select(this).style("fill", "steelblue");
+      .on("mouseout", function(event, d) {
+        d3.select("#rect_" + parseDate(d.date)).style("fill", "steelblue");
         div.transition()
           .duration(500)
           .style("opacity", 0);
@@ -335,17 +352,34 @@
       .attr("width", width/filteredData.length*3/4)
       .attr("y", function(d) { return y(d[currStatistics][currState]); })
       .attr("height", function(d) { return height - y(d[currStatistics][currState]); })
-      .on("mouseover", function(d) {
-        d3.select(this).style("fill", "#ffa500");
+      .attr("id", function(d) { return "rect_" + parseDate(d.date) })
+
+    let hoverData = JSON.parse(JSON.stringify(filteredData))
+    hoverData.map(function (d) {
+      d.date = new Date(d.date)
+      return d
+    })
+
+    // add hover bar
+    g.selectAll("rect")
+      .data(hoverData, function(d) { return d })
+      .enter().append("rect")
+      .attr("opacity", 0)
+      .attr("x", function(d) { return x(d.date) - (width/filteredData.length*3/4)/2; })
+      .attr("width", width/filteredData.length*3/4)
+      .attr("y", function(d) { return y(d3.max(filteredData, function(d) { return d[currStatistics][currState]; })); })
+      .attr("height", function(d) { return height - y(d3.max(filteredData, function(d) { return d[currStatistics][currState]; })); })
+      .on("mouseover", function(event, d) {
+        d3.select("#rect_" + parseDate(d.date)).style("fill", "#ffa500");
         div.transition()
           .duration(200)
           .style("opacity", .9);
-        div	.html("Date: " + d.date + "<br/>"  + stateTranslation() + " Cases: " + d[currStatistics][currState])
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
+        div.html("Date: " + parseDate(d.date) + "<br/>"  + statisticsTranslation() + " Cases: " + d[currStatistics][currState])
+          .style("left", (event.pageX + 30) + "px")
+          .style("top", (event.pageY - 30) + "px");
       })
-      .on("mouseout", function(d) {
-        d3.select(this).style("fill", "steelblue");
+      .on("mouseout", function(event, d) {
+        d3.select("#rect_" + parseDate(d.date)).style("fill", "steelblue");
         div.transition()
           .duration(500)
           .style("opacity", 0);
