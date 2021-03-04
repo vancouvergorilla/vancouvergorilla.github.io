@@ -28,7 +28,7 @@
           margin-top: 100px;
       }
   </style>
-  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
   <script src="https://unpkg.com/d3-simple-slider"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js" charset="utf-8"></script>
   <link
@@ -235,7 +235,7 @@
       updateData(formattedData, this.value)
     });
 
-    // data type button
+    // statistics button
     d3.selectAll("input[name='statistics']").on("change", function(){
       currStatistics = this.value
       updateData(formattedData, currDataType)
@@ -248,11 +248,17 @@
     })
   });
 
-  function updateData(formattedData, dataType) {
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function updateData(formattedData, dataType) {
     // switch between daily and cumulative
     if (dataType === "daily" && currDataType === "cumulative") {
       formattedData.sort((a, b) => {
-        return a < b ? 1 : -1
+        if(a.date === b.date) return 0;
+        if(a.date < b.date) return -1;
+        if(a.date > b.date) return 1
       })
       for (let i = formattedData.length - 1; i >= 1; i--) {
         for (let j = 0; j < USStates.length; j++) {
@@ -263,7 +269,9 @@
       currDataType = "daily"
     } else if (dataType === "cumulative" && currDataType === "daily") {
       formattedData.sort((a, b) => {
-        return a < b ? 1 : -1
+        if(a.date === b.date) return 0;
+        if(a.date < b.date) return -1;
+        if(a.date > b.date) return 1
       })
       for (let i = 1; i < formattedData.length; i++) {
         for (let j = 0; j < USStates.length; j++) {
@@ -274,8 +282,6 @@
       currDataType = "cumulative"
     }
     d3.select(".chart-title").text(dataTypeTranslation() + " " + statisticsTranslation() + " Cases by Date in " + stateTranslation())
-
-    console.log(formattedData)
 
     // filter date
     var filteredData = []
