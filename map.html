@@ -1,0 +1,686 @@
+
+<!DOCTYPE html>
+<html>
+ 
+<head>
+    <style>
+        .x-axis { font: 14px sans-serif; }
+        .y-axis { font: 14px sans-serif; }
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 2px;
+        }
+        div.tooltip {
+            position: absolute;
+            padding: 10px;
+            font: 16px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+        .main-display {
+            display: flex;
+            justify-content: center;
+        }
+        .interactive-box {
+            margin-top: 100px;
+        }
+        #ui-control {
+            position: absolute;
+            width: 300px;
+            top: 53%;
+            left: 70%;
+        }
+        #info-box {
+            position: absolute;
+            width: 500px;
+            top: 55%;
+            left: 70%;
+        }
+        #legend {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            top: 23%;
+            left: 70%;
+        }
+        #legend-boxOne {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: black;
+            margin-left: 10px;
+        }
+        #legend-boxTwo {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: black;
+            margin-left: 10px;
+        }
+        #legend-boxThree {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: black;
+            margin-left: 10px;
+        }
+        #legend-boxFour {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: black;
+            margin-left: 10px;
+        }
+        #legend-textOne {
+            margin-left: 50px;
+            margin-top: -5px;
+        }
+        #legend-textTwo {
+            margin-left: 50px;
+            margin-top: -5px;
+        }
+        #legend-textThree {
+            margin-left: 50px;
+            margin-top: -5px;
+        }
+        #legend-textFour {
+            margin-left: 50px;
+            margin-top: -5px;
+        }
+        
+    </style>
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.2.1/chroma.min.js"></script>
+
+    <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous"
+    />
+
+</head>
+
+<body>
+  <div class="main-display">
+    <div class="svg-container">
+      <svg width="1200" height="500"></svg>
+      <div class="row align-items-center">
+        <div class="col-sm-2"><p id="value-range"></p></div>
+        <div class="col-sm"><div id="slider-range"></div></div>
+      </div>
+    </div>
+    <div id="info-box">2021.1</div>
+    <div id="ui-control">
+        <input type="range" min="1" , max="13" , value="2021.1" , step="1" , class="slider">
+    </div>
+    <div id="legend">
+        <div id="legend-boxOne" style = "background-color: #4F4F4F"></div>
+        <p id="legend-textOne" > </p>
+        <div id="legend-boxTwo" style = "background-color: #696969"></div>
+        <p id="legend-textTwo"> </p>
+        <div id="legend-boxThree" style = "background-color: #828282"></div>
+        <p id="legend-textThree"> </p>
+        <div id="legend-boxFour" style = "background-color: #9C9C9C"></div>
+        <p id="legend-textFour"> </p>
+    </div>
+     
+  </div>
+
+  <div class="type-selection">
+    <button onclick="window.location.href = 'covid19.html'" style="margin-left: 20px; margin-right: 20px;"> Overview Confirmed Cases </button>
+<!--    <button onclick="window.location.href = 'proportion.html'" style="margin-left: 20px; margin-right: 20px;"> Proportion </button>-->
+    <button onclick="window.location.href = 'map.html'" style="margin-left: 20px; margin-right: 20px;"> Map </button>
+  </div>
+  
+
+    <script type="text/javascript">
+
+    var USStates = ['All', 'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia',
+    'Florida','Georgia','Guam','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland',
+    'Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey',
+    'New Mexico','New York','North Carolina','North Dakota','Northern Mariana Islands','Ohio','Oklahoma','Oregon','Pennsylvania',
+    'Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virgin Island','Virginia','Washington',
+    'West Virginia','Wisconsin','Wyoming']
+
+    var width = 1200;
+    var height = 500;
+
+      var monthOne = []
+      var monthTwo = []
+      var monthThree = []
+      var monthFour = []
+      var monthFive = []
+      var monthSix = []
+      var monthSeven = []
+      var monthEight = []
+      var monthNine = []
+      var monthTen = []
+      var monthEle = []
+      var monthTwl = []
+      var monthThi = []
+      var result = []
+
+    var svg = d3.select("svg")
+      
+    var div = d3.select("body")
+                .append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
+    svg.append("text")
+      .attr("class", "chart-title")
+      .attr("transform", "translate(300,0)")
+      .attr("x", 50)
+      .attr("y", 50)
+      .attr("font-size", "24px")
+      .text("Map of COVID-19 in USA")
+    
+
+    var g = svg.append("g")
+                .style("margin-top", 30 )
+                .attr("transform", "translate(" + 100 + "," + 100 + ")");
+    // projection and bild a usa map
+    var projection = d3.geo.albersUsa();
+    var path = d3.geo.path()
+        .projection(projection);
+
+    d3.queue()
+        .defer(d3.json, "us-states.json")
+        .defer(d3.csv, "data.csv")
+        .await(ready);
+ 
+    function ready(error, states, data) {
+      for(let i=0; i<data.length; i++){
+        // if the data is in 2020
+        if(parseInt(data[i].ObservationDate.substring(6,10)) == 2020){
+          var currentMonth = parseInt(data[i].ObservationDate.substring(0,2))
+          var currentDay = parseInt(data[i].ObservationDate.substring(3,5))
+          // filter the month into different group
+          if(currentMonth == 1 && currentDay == 31){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthOne = classifyMonth(data[i].Province, data[i].Confirmed, monthOne)
+            }
+          }
+          if(currentMonth == 2 && currentDay == 29){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthTwo = classifyMonth(data[i].Province, data[i].Confirmed, monthTwo)
+            }
+          }
+          if(currentMonth == 3 && currentDay == 31){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthThree = classifyMonth(data[i].Province, data[i].Confirmed, monthThree)
+            }
+          }
+          if(currentMonth == 4 && currentDay == 30){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthFour = classifyMonth(data[i].Province, data[i].Confirmed, monthFour)
+            }
+          }
+          if(currentMonth == 5 && currentDay == 31){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthFive = classifyMonth(data[i].Province, data[i].Confirmed, monthFive)
+            }
+          }
+          if(currentMonth == 6 && currentDay == 30){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthSix = classifyMonth(data[i].Province, data[i].Confirmed, monthSix)
+            }
+          }
+          if(currentMonth == 7 && currentDay == 31){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthSeven = classifyMonth(data[i].Province, data[i].Confirmed, monthSeven)
+            }
+          }
+          if(currentMonth == 8 && currentDay == 31){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthEight = classifyMonth(data[i].Province, data[i].Confirmed, monthEight)
+            }
+          }
+          if(currentMonth == 9 && currentDay == 30){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthNine = classifyMonth(data[i].Province, data[i].Confirmed, monthNine)
+            }
+          }
+          if(currentMonth == 10 && currentDay == 31){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthTen = classifyMonth(data[i].Province, data[i].Confirmed, monthTen)
+            }
+          }
+          if(currentMonth == 11 && currentDay == 30){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthEle = classifyMonth(data[i].Province, data[i].Confirmed, monthEle)
+            }
+          }
+          if(currentMonth == 12 && currentDay == 31){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthTwl = classifyMonth(data[i].Province, data[i].Confirmed, monthTwl)
+            }
+          }
+
+        }
+
+        if (parseInt(data[i].ObservationDate.substring(6,10)) == 2021){
+          var currentMonth = parseInt(data[i].ObservationDate.substring(0,2))
+          var currentDay = parseInt(data[i].ObservationDate.substring(3,5))
+          // filter the month into different group
+          if(currentMonth == 1 && currentDay == 19){
+            var valid = checkState(data[i].Province)
+            if(valid === 0) {
+              monthThi = classifyMonth(data[i].Province, data[i].Confirmed, monthThi)
+            }
+          }
+        }
+      }
+
+      var mapCharData = []
+
+      for(let i=0; i<53; i++){
+        if(Object.keys(monthThi)[i] == undefined){
+          continue
+        }
+        mapCharData.push( {
+          state: Object.keys(monthThi)[i],
+          value: Object.values(monthThi)[i]
+        })
+      }
+
+        var map = svg.append('g')
+            .selectAll("path")
+            .data(states.features)
+            .enter().append("path")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1)
+            .attr('fill', function(d, i) {
+              return setColor(monthThi, d.properties.name);
+            })
+            .attr("d", path)
+            .on("mouseover", function(d, i) {
+              var count = 0;
+              for(let i = 0; i < mapCharData.length; i++){
+                if(Object.values(mapCharData)[i].state == d.properties.name){
+                  count = Object.values(mapCharData)[i].value
+                }
+              }
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html("State: " + d.properties.name + "<br/>" + "Confirmed: " + count)
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY) + "px");
+            })
+            .on("mouseout", function(d, i) {
+                div.transition()
+                      .duration(500)
+                      .style("opacity", 0)
+            }) 
+
+      d3.select(".slider")
+        .on("input", function () {
+          currentDate = this.value;
+          update(currentDate)
+        });
+
+
+      function update(currentDate) {
+        currentDate <= 12 ? d3.select('#info-box').text("2020" + "." + currentDate) : d3.select('#info-box').text("2021" + ".1")
+        var currentData = []
+        if(currentDate == 1){
+          currentData = monthOne
+        }
+        if(currentDate == 2){
+          currentData = monthTwo
+        }
+        if(currentDate == 3){
+          currentData = monthThree
+        }
+        if(currentDate == 4){
+          currentData = monthFour
+        }
+        if(currentDate == 5){
+          currentData = monthFive
+        }
+        if(currentDate == 6){
+          currentData = monthSix
+        }
+        if(currentDate == 7){
+          currentData = monthSeven
+        }
+        if(currentDate == 8){
+          currentData = monthEight
+        }
+        if(currentDate == 9){
+          currentData = monthNine
+        }
+        if(currentDate == 10){
+          currentData = monthTen
+        }
+        if(currentDate == 11){
+          currentData = monthEle
+        }
+        if(currentDate == 12){
+          currentData = monthTwl
+        }
+        if(currentDate == 13){
+          currentData = monthThi
+        }
+
+        var newArr = monthNormalize(currentData)
+
+        map.attr('fill', function(d, i) {
+          return setColor(currentData, d.properties.name);
+        })
+          .on("mouseover", function(d, i) {
+              var count = 0;
+              for(let i = 0; i < newArr.length; i++){
+                if(Object.values(newArr)[i].state == d.properties.name){
+                  
+                  count = Object.values(newArr)[i].value
+                }
+              }
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html("State: " + d.properties.name + "<br/>" + "Confirmed: " + count)
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY) + "px");
+            })
+            .on("mouseout", function(d, i) {
+                div.transition()
+                      .duration(500)
+                      .style("opacity", 0);
+            })   
+      }
+    }
+
+    function setColor(inputData, target){
+      mapCharData = monthNormalize(inputData)
+      // var colors = ["#F1E3D6", "#E7C6B0", "#DCAC89", "#C99067", "#BE7542"]
+      var colors = ["#E8E8E8", "#CFCFCF", "#B5B5B5", "#9C9C9C", "#828282", "#696969", "#4F4F4F"]
+          proMin = d3.min(mapCharData, function(d) { return d.value; });
+          proMax = d3.max(mapCharData, function(d) { return d.value; });
+
+      var maxlength = (proMax).toString().length
+      var minlength = (proMin).toString().length
+      var newMax = Math.ceil(proMax/Math.pow(10, parseInt(maxlength)-1)) * Math.pow(10, parseInt(maxlength)-1)
+      var newMin = Math.floor(proMin/Math.pow(10, parseInt(minlength)-1)) * Math.pow(10, parseInt(minlength)-1)
+
+      return targetColor(colors, proMin, proMax, target, mapCharData)
+    }
+
+    function targetColor(colors, proMin, proMax, target, mapCharData){
+
+      mapCharData.sort(compareFunction("value"));
+
+      var currnetColor;
+      var colorScale = d3.scale.quantile()
+            .domain([proMin, colors.length - 1, proMax])
+            .range(colors);
+      
+      for (var i = mapCharData.length - 1; i >= 0; i--) {
+        if (target == mapCharData[i].state) {
+          currentColor = colorScale(mapCharData[i].value)
+          return colorScale(mapCharData[i].value);
+        }
+      }
+      // calculate quantile 
+      var length = mapCharData.length
+
+      var first = (mapCharData.length+1)*0.25
+      var second = (mapCharData.length+1)*0.5
+      var third = (mapCharData.length+1)*0.75
+
+      // filter the first month out 
+      if(mapCharData.length === 4){
+        d3.selectAll('#legend-textOne').text(3 + "-" + 4)
+        d3.selectAll('#legend-textTwo').text(2 + "-" + 3)
+        d3.selectAll('#legend-textThree').text(1.75 + "-" + 2)
+        d3.selectAll('#legend-textFour').text(proMin + "-" + 1.75)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#E8E8E8';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#9C9C9C';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#828282';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#696969';
+      }
+      if(mapCharData.length === 9){
+        d3.selectAll('#legend-textOne').text(7 + "-" + 12)
+        d3.selectAll('#legend-textTwo').text(2 + "-" + 7)
+        d3.selectAll('#legend-textThree').text(1 + "-" + 2)
+        d3.selectAll('#legend-textFour').text(0 + "-" + 1)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#E8E8E8';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 2){
+        d3.selectAll('#legend-textOne').text(70000 + "-" + 80000)
+        d3.selectAll('#legend-textTwo').text(20000 + "-" + 70000)
+        d3.selectAll('#legend-textThree').text(6000 + "-" + 20000)
+        d3.selectAll('#legend-textFour').text(2 + "-" + 6000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 14){
+        d3.selectAll('#legend-textOne').text(65000 + "-" + 300000)
+        d3.selectAll('#legend-textTwo').text(40000 + "-" + 65000)
+        d3.selectAll('#legend-textThree').text(20000 + "-" + 40000)
+        d3.selectAll('#legend-textFour').text(14 + "-" + 20000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 22){
+        d3.selectAll('#legend-textOne').text(300000 + "-" + 400000)
+        d3.selectAll('#legend-textTwo').text(130000 + "-" + 300000)
+        d3.selectAll('#legend-textThree').text(50000 + "-" + 130000)
+        d3.selectAll('#legend-textFour').text(22 + "-" + 50000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 30){
+        d3.selectAll('#legend-textOne').text(300000 + "-" + 400000)
+        d3.selectAll('#legend-textTwo').text(200000 + "-" + 300000)
+        d3.selectAll('#legend-textThree').text(50000 + "-" + 200000)
+        d3.selectAll('#legend-textFour').text(30 + "-" + 50000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 42){
+        d3.selectAll('#legend-textOne').text(400000 + "-" + 520000)
+        d3.selectAll('#legend-textTwo').text(200000 + "-" + 400000)
+        d3.selectAll('#legend-textThree').text(70000 + "-" + 200000)
+        d3.selectAll('#legend-textFour').text(42 + "-" + 70000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 56){
+        d3.selectAll('#legend-textOne').text(450000 + "-" + 520000)
+        d3.selectAll('#legend-textTwo').text(200000 + "-" + 450000)
+        d3.selectAll('#legend-textThree').text(50000 + "-" + 200000)
+        d3.selectAll('#legend-textFour').text(56 + "-" + 70000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 70){
+        d3.selectAll('#legend-textOne').text(450000 + "-" + 520000)
+        d3.selectAll('#legend-textTwo').text(200000 + "-" + 450000)
+        d3.selectAll('#legend-textThree').text(80000 + "-" + 200000)
+        d3.selectAll('#legend-textFour').text(70 + "-" + 80000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 92){
+        d3.selectAll('#legend-textOne').text(450000 + "-" + 520000)
+        d3.selectAll('#legend-textTwo').text(200000 + "-" + 450000)
+        d3.selectAll('#legend-textThree').text(80000 + "-" + 200000)
+        d3.selectAll('#legend-textFour').text(92 + "-" + 80000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 106){
+        d3.selectAll('#legend-textOne').text(900000 + "-" + 1300000)
+        d3.selectAll('#legend-textTwo').text(500000 + "-" + 900000)
+        d3.selectAll('#legend-textThree').text(180000 + "-" + 500000)
+        d3.selectAll('#legend-textFour').text(106 + "-" + 180000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 122){
+        d3.selectAll('#legend-textOne').text(1350000 + "-" + 2300000)
+        d3.selectAll('#legend-textTwo').text(750000 + "-" + 1350000)
+        d3.selectAll('#legend-textThree').text(330000 + "-" + 750000)
+        d3.selectAll('#legend-textFour').text(122 + "-" + 330000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      if(mapCharData[0].value === 129){
+        d3.selectAll('#legend-textOne').text(2200000 + "-" + 3100000)
+        d3.selectAll('#legend-textTwo').text(1000000 + "-" + 2200000)
+        d3.selectAll('#legend-textThree').text(440000 + "-" + 1000000)
+        d3.selectAll('#legend-textFour').text(129 + "-" + 440000)
+        var divOne = document.getElementById("legend-boxFour");
+        divOne.style.backgroundColor='#9C9C9C';
+        var divTwo = document.getElementById("legend-boxThree");
+        divTwo.style.backgroundColor='#828282';
+        var divThree = document.getElementById("legend-boxTwo");
+        divThree.style.backgroundColor='#696969';
+        var divFour = document.getElementById("legend-boxOne");
+        divFour.style.backgroundColor='#4F4F4F';
+      }
+      return "#E8E8E8"
+    }
+
+    function checkState(state){
+      let index = USStates.indexOf(state) === -1 ? 1 : 0
+      return index
+    }
+
+    function classifyMonth(province, confirmed, result){
+      if(result[province]){
+        result[province] += parseInt(confirmed);
+      }else{
+        result[province]= parseInt(confirmed);
+      }
+      return result
+    }
+
+    function monthNormalize(normalizeMonth){
+      var arr = []
+
+      for(let i=0; i<53; i++){
+        if(Object.keys(normalizeMonth)[i] == undefined){
+          continue
+        }
+        arr.push( {
+          state: Object.keys(normalizeMonth)[i],
+          value: Object.values(normalizeMonth)[i]
+        })
+      }
+      return arr
+    }
+
+    function calculateQuantile(data, quantile){
+      var result = data[Math.floor(quantile)-1].value + (data[Math.floor(quantile)].value - data[Math.floor(quantile)-1].value) * (quantile- Math.floor(quantile))
+      return result
+    }
+
+    function compareFunction(propertyName){
+      return function (src,tar) {
+        var v1=src[propertyName];
+        var v2=tar[propertyName];
+        if(v1>v2){
+          return 1;
+        }
+        if(v1<v2){
+          return -1;
+        }
+        return 0;
+      };
+    }
+
+    </script>
+</body>
+</html>
