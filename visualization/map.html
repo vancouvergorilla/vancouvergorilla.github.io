@@ -134,7 +134,7 @@
 
   <div class="type-selection">
     <button onclick="window.location.href = 'covid19.html'" style="margin-left: 20px; margin-right: 20px;"> Overview Confirmed Cases </button>
-    <button onclick="window.location.href = 'proportion.html'" style="margin-left: 20px; margin-right: 20px;"> Proportion </button>
+<!--    <button onclick="window.location.href = 'proportion.html'" style="margin-left: 20px; margin-right: 20px;"> Proportion </button>-->
     <button onclick="window.location.href = 'map.html'" style="margin-left: 20px; margin-right: 20px;"> Map </button>
   </div>
   
@@ -192,7 +192,7 @@
 
     d3.queue()
         .defer(d3.json, "us-states.json")
-        .defer(d3.csv, "data.csv")
+        .defer(d3.csv, "us_covid_19_data.csv")
         .await(ready);
  
     function ready(error, states, data) {
