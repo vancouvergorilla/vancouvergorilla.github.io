@@ -192,7 +192,7 @@
 
     d3.queue()
         .defer(d3.json, "us-states.json")
-        .defer(d3.csv, "us_covid_19_data.csv")
+        .defer(d3.csv, "data.csv")
         .await(ready);
  
     function ready(error, states, data) {
