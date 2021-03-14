@@ -188,6 +188,13 @@
       .attr("class", "y-axis")
       .call(yAxis);
 
+    // text label for the y axis
+    g.append("text")
+      .attr("transform", "translate(0,-40)")
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Cases");
+
     // Add bar
     g.selectAll("rect")
       .data(formattedData, function(d) { return d.date })
