@@ -67,9 +67,9 @@
 </div>
 
 <div class="type-selection">
-  <button onclick="window.location.href = 'covid19.html'" style="margin-left: 20px; margin-right: 20px;"> Overview Confirmed Cases </button>
+  <button onclick="window.location.href = 'covid19.html'" style="margin-left: 20px; margin-right: 20px;"> View Cases by Date </button>
 <!--  <button onclick="window.location.href = 'proportion.html'" style="margin-left: 20px; margin-right: 20px;"> Proportion </button>-->
-  <button onclick="window.location.href = 'map.html'"> Map </button>
+  <button onclick="window.location.href = 'map.html'"> View Cases by Map </button>
 </div>
 
 <script>
@@ -102,7 +102,7 @@
     .attr("x", 50)
     .attr("y", 50)
     .attr("font-size", "24px")
-    .text("Cumulative Confirmed Cases by Date in United States")
+    .text("Cumulative Confirmed COVID-19 Cases by Date in United States")
 
   // selection
   var USStates = ['All', 'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia',
@@ -306,7 +306,7 @@
       }
       currDataType = "cumulative"
     }
-    d3.select(".chart-title").text(dataTypeTranslation() + " " + statisticsTranslation() + " Cases by Date in " + stateTranslation())
+    d3.select(".chart-title").text(dataTypeTranslation() + " " + statisticsTranslation() + " COVID-19 Cases by Date in " + stateTranslation())
 
     // filter date
     var filteredData = []
